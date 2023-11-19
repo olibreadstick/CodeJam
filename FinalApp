@@ -1,0 +1,51 @@
+import plotly.io as pio
+#import for html link
+
+app = Flask(__name__)
+
+data_csv = r'C:\Users\lunel\OneDrive\Documents\DataBaseCodeJamFinal.csv'
+
+
+@app.route('/')
+def show_template():
+    return render_template('trytemplate.html')
+
+@app.route('/submit', methods=['POST'])
+def submit():
+    
+    # getting the values from the form
+
+    #print(f"Received values: {latitude}, {longitude}, {message}")
+
+    with open(data_csv, mode='a', newline='') as csvfile:
+        latitude = request.form['latitude']
+        longitude = request.form['longitude']
+        message = request.form['message']
+        csv_writer = csv.writer(csvfile)
+        csv_writer.writerow([latitude, longitude, message])
+    # writing the values in the cvs file
+
+        return 'Data added to CSV file.'
+
+if __name__ == '__main__':
+    app.run(debug=True)
+    data = pd.read_csv(data_csv)
+# allows to read an csv file and transform it into a pandas dataframe 
+
+### Create scatter map
+    fig = px.scatter_mapbox(data,
+                            lat = 'Latitude',
+                            lon = 'Longitude',
+                            hover_name = 'Title message',
+                            zoom = 0,
+                            hover_data = 'Message',
+                            title = 'Messages from Around the World'
+                            )
+
+    fig.update_layout(mapbox_style = 'open-street-map')
+    fig.update_layout(margin = {'r':50, 't':50, 'l':50, 'b':10})
+    fig.show()
+
+    #pio.write_html(fig,file='messagesaroundtheworld.html', auto_open = True
+    
+
