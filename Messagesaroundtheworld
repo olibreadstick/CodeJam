@@ -1,0 +1,73 @@
+from flask import Flask, render_template, request
+import csv
+# to be able to read and modify csv file
+
+app = Flask(__name__)
+
+data_csv = r'C:\Users\lunel\OneDrive\Documents\DataBaseCodeJamFinal.csv'
+# chnage name ???
+
+@app.route('/')
+def show_template():
+    return render_template('messagesaroundtheworld.html')
+
+@app.route('/submit', methods=['POST', 'GET'])
+def submit():
+    if request.method == 'POST':
+        latitude = request.form.get('Latitude')
+        longitude = request.form.get('Longitude')
+        message = request.form.get('Message')
+    # getting the values from the form
+
+    with open(data_csv, mode='a', newline='') as cvsfile:
+        cvs_writer = cvs.writer(cvsfile)
+        csv_writer.writerow([Latitude, Longitude, Message])
+    # writing the values in the cvs file
+
+    getMap()
+    return 'Data added to CSV file.'
+
+#if __name__ == '__main__':
+ #   app.run(debug=True)
+   
+def getMap():
+    import plotly.express as px
+    import pandas as pd
+
+    #imports for the database
+
+    import plotly.io as pio
+    #import for html link
+
+
+    # Import data from USGS
+    data = pd.read_csv(r'C:\Users\lunel\OneDrive\Documents\DatabaseCodeJam.csv')
+    # allows to read an csv file and transform it into a pandas dataframe ? 
+
+    ### Drop rows with missing or invalid values in the 'mag' column
+    ##data = data.dropna(subset=['mag'])
+    ##data = data[data.mag >= 0]
+    ##
+    ##
+    ### Create scatter map
+    fig = px.scatter_mapbox(data,
+                            lat = "latitude",
+                            lon = 'longitude',
+                            #color = data['Country'],
+                            hover_name = 'Title message',
+                            zoom = 0,
+                            hover_data = 'Message',
+                            title = 'Messages from Around the World'
+                            )
+
+    ###color was commented out since we don't necessarily want diff 'intensities' for point 
+    fig.update_layout(mapbox_style = 'open-street-map')
+    fig.update_layout(margin = {'r':50, 't':50, 'l':50, 'b':10})
+    fig.show()
+
+    pio.write_html(fig,file='messagesaroundtheworld.html', auto_open = True)
+
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
