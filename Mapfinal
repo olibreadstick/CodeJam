@@ -1,0 +1,39 @@
+import plotly.express as px
+import pandas as pd
+
+
+#imports for the database
+
+import plotly.io as pio
+#import for html link
+
+
+data = pd.read_csv(r'C:\Users\lunel\OneDrive\Documents\DataBaseCodeJam.csv')
+# allows to read an csv file and transform it into a pandas dataframe ? 
+
+### Drop rows with missing or invalid values in the 'mag' column
+##data = data.dropna(subset=['mag'])
+##data = data[data.mag >= 0]
+##
+##
+### Create scatter map
+fig = px.scatter_mapbox(data,
+                        lat = "latitude",
+                        lon = 'longitude',
+                        #color = data['Country'],
+                        hover_name = 'Title message',
+                        zoom = 0,
+                        hover_data = 'Message',
+                        title = 'Messages from Around the World'
+                        )
+
+###color was commented out since we don't necessarily want diff 'intensities' for point 
+fig.update_layout(mapbox_style = 'open-street-map')
+fig.update_layout(margin = {'r':50, 't':50, 'l':50, 'b':10})
+fig.show()
+
+pio.write_html(fig,file='messagesaroundtheworld.html', auto_open = True)
+
+
+
+
